@@ -67,10 +67,6 @@ public class MainActivity extends Activity{
 
     void onService() {
         dbHelper.onUpgrade(sqLiteDatabase,1,1);
-        SensorActivity.yArray.clear();
-        SensorActivity.xArray.clear();
-        SensorActivity.zArray.clear();
-        SensorActivity.count = 0;
         String time = durationTime.getText().toString();
         Intent intent = new Intent();
         intent.putExtra("time",time);
@@ -93,18 +89,23 @@ public class MainActivity extends Activity{
 
     void onGenerate(){
         Toast.makeText(this,"Generating File", Toast.LENGTH_SHORT).show();
-        Log.i(TAG, "onGenerate: " + SensorActivity.xArray.size());
+        Log.i(TAG, "onGenerate: " + AccelerateSensorService.xArray.size());
         //保存文件到手表中
-        File xDataFile = writeArrayFile(SensorActivity.xArray,"xData.txt");
-        File yDataFile = writeArrayFile(SensorActivity.yArray,"yData.txt");
-        File zDataFile = writeArrayFile(SensorActivity.zArray,"zData.txt");
+        File xAcceDataFile = writeArrayFile(AccelerateSensorService.xArray,"xAcceData.txt");
+        File yAcceDataFile = writeArrayFile(AccelerateSensorService.yArray,"yAcceData.txt");
+        File zAcceDataFile = writeArrayFile(AccelerateSensorService.zArray,"zAcceData.txt");
+        File xGyroDataFile = writeArrayFile(AccelerateSensorService.xArray,"xGyroData.txt");
+        File yGyroDataFile = writeArrayFile(AccelerateSensorService.yArray,"yGyroData.txt");
+        File zGyroDataFile = writeArrayFile(AccelerateSensorService.zArray,"zGyroData.txt");
 //        File audioDataFile = new File(FileUtils.getWavFileAbsolutePath("test"));
 //        Log.i(TAG, "onGenerate: " + FileUtils.getWavFileAbsolutePath("test"));
         File audioDataFile = new File(PCM_PATH);
         Log.i(TAG, "onGenerate: audioDataFile size = " + audioDataFile.length());
         Log.i(TAG, "onGenerate: " +PCM_PATH);
         //使用封装好的FileTransfer发送request
-        fileTransfer.send("send_file",new String[]{"xDataAsset","yDataAsset","zDataAsset","audioAsset"},new File[]{xDataFile,yDataFile,zDataFile,audioDataFile});
+        fileTransfer.send("send_file",
+                new String[]{"xAcceDataAsset","yAcceDataAsset","zAcceDataAsset","audioAsset","xGyroAsset","yGyroAsset","zGyroAsset"},
+                new File[]{xAcceDataFile,yAcceDataFile,zAcceDataFile,audioDataFile,xGyroDataFile,yGyroDataFile,zGyroDataFile});
     }
 
     File writeArrayFile(ArrayList<Float> arrayList, String file_name){

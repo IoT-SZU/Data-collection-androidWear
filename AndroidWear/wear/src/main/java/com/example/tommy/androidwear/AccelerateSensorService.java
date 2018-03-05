@@ -13,6 +13,8 @@ import android.util.Log;
 
 import com.example.tommy.androidwear.Utils.SimpleRate;
 
+import java.util.ArrayList;
+
 /**
  * Created by Tommy on 2017/10/13.
  */
@@ -20,20 +22,25 @@ import com.example.tommy.androidwear.Utils.SimpleRate;
 public class AccelerateSensorService extends Service implements SensorEventListener{
 
     final String TAG = "SensorService";
-    private SensorManager sensorManager;
+
     private Sensor accelerationSensor;
     private Mbinder mbinder = new Mbinder();
     private MsgListener msgListener;
     private SimpleRate simpleRate;
     float gravity = (float)9.8;
 
+    //静态变量用来缓存需要的数据
+    public static ArrayList<Float> xArray = new ArrayList<>();
+    public static ArrayList<Float> yArray = new ArrayList<>();
+    public static ArrayList<Float> zArray = new ArrayList<>();
+
     public void onCreate(){
         super.onCreate();
         Log.i(TAG, "onCreate: ");
-        sensorManager = (SensorManager)getSystemService(SENSOR_SERVICE);
+
         simpleRate = new SimpleRate();
-        accelerationSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-        sensorManager.registerListener(this,accelerationSensor,SensorManager.SENSOR_DELAY_FASTEST);
+        accelerationSensor = SensorActivity.sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        SensorActivity.sensorManager.registerListener(this,accelerationSensor,SensorManager.SENSOR_DELAY_FASTEST);
     }
 
     @Nullable
@@ -53,14 +60,20 @@ public class AccelerateSensorService extends Service implements SensorEventListe
             return;
         if (msgListener == null)
             return;
+        float x = event.values[0];
+        float y = event.values[1];
+        float z = event.values[2];
 //        final float alpha = (float) 0.8;
 //        gravity = alpha * gravity  + (1-alpha)*event.values[2];
 //        float linearAcceleration = event.values[2]  - gravity;
-        msgListener.getMsg(event.values[0],event.values[1],event.values[2]);
+        msgListener.getMsg(x,y,z);
+        xArray.add(x);
+        yArray.add(y);
+        zArray.add(z);
     }
 
     public void unregister(){
-        sensorManager.unregisterListener(this);
+        SensorActivity.sensorManager.unregisterListener(this);
     }
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {

@@ -43,7 +43,7 @@ public class FileTransfer implements DataApi.DataListener{
     Toast mToast;
     String tmp_string="";
     //
-    final String ASSET_NAME_ARRAY[] = {"xDataAsset","yDataAsset","zDataAsset","audioAsset"};
+    final String ASSET_NAME_ARRAY[] = {"xAcceDataAsset","yAcceDataAsset","zAcceDataAsset","audioAsset","xGyroAsset","yGyroAsset","zGyroAsset"};
     final String TAG = "FileTransfer";
     final String FILE_PATH = Environment.getExternalStorageDirectory().getAbsolutePath() + "/SensorAudioRecords";
     GoogleApiClient mGoogleApiClient;

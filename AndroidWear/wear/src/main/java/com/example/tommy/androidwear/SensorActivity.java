@@ -4,14 +4,13 @@ import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.util.Log;
 import android.widget.TextView;
 
 import com.example.tommy.androidwear.Audio.AudioRecorder;
 
-import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -25,13 +24,14 @@ public class SensorActivity extends Activity implements AccelerateSensorService.
     private int durationTime;
     private TextView textViewValue;
     private DataView dataView;
-    //静态变量用来缓存需要的数据
-    public static ArrayList<Float> xArray = new ArrayList<>();
-    public static ArrayList<Float> yArray = new ArrayList<>();
-    public static ArrayList<Float> zArray = new ArrayList<>();
+    public static SensorManager sensorManager;
+
     //加速度服务
-    private AccelerateSensorService sensorService;
-    private Intent sensorServiceIntent;
+    private AccelerateSensorService accelerateSensorService;
+    private Intent acceSensorServiceIntent;
+    //陀螺仪服务
+    private GyroscopeSensorService gyroscopeSensorService;
+    private Intent gyroscopeServiceIntent;
     //录音服务
     AudioRecorder audioRecorder;
 
@@ -40,13 +40,15 @@ public class SensorActivity extends Activity implements AccelerateSensorService.
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sensor);
-        xArray = new ArrayList<>();
-        yArray = new ArrayList<>();
-        zArray = new ArrayList<>();
+
+        sensorManager = (SensorManager)getSystemService(SENSOR_SERVICE);
 
         xTv = (TextView)findViewById(R.id.xAxis);
         yTv = (TextView)findViewById(R.id.yAxis);
         zTv = (TextView)findViewById(R.id.zAxis);
+
+        accelerateSensorService = new AccelerateSensorService();
+        gyroscopeSensorService = new GyroscopeSensorService();
 
         Intent intent = getIntent();
 
@@ -54,18 +56,23 @@ public class SensorActivity extends Activity implements AccelerateSensorService.
         textViewValue = (TextView)findViewById(R.id.value);
         dataView = (DataView)findViewById(R.id.dataView);
 
+        //绑定服务（用来检测陀螺仪）
+        gyroscopeServiceIntent = new Intent(this,GyroscopeSensorService.class);
+        bindService(gyroscopeServiceIntent,gyroSensorServiceConnection,BIND_AUTO_CREATE);
+        startService(gyroscopeServiceIntent);
+
         //绑定服务（用来检测加速度）
-        sensorServiceIntent = new Intent(this,AccelerateSensorService.class);
-        bindService(sensorServiceIntent,sensorServiceConnection,BIND_AUTO_CREATE);
-        startService(sensorServiceIntent);
+        acceSensorServiceIntent = new Intent(this,AccelerateSensorService.class);
+        bindService(acceSensorServiceIntent,acceSensorServiceConnection,BIND_AUTO_CREATE);
+        startService(acceSensorServiceIntent);
+
+
 
         audioRecorder = AudioRecorder.getInstance();
 
 
         startRecord();
-        Log.d("count",count+"");
-        count = 0;
-        ifstop = 0;
+
         //控制时间
         TimeControl();
 
@@ -90,16 +97,28 @@ public class SensorActivity extends Activity implements AccelerateSensorService.
         }
     }
     //加速度传感器服务
-    ServiceConnection sensorServiceConnection = new ServiceConnection() {
+    ServiceConnection acceSensorServiceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
-            sensorService = ((AccelerateSensorService.Mbinder)service).getService();
-            sensorService.setMsgListener(SensorActivity.this);
+            accelerateSensorService = ((AccelerateSensorService.Mbinder)service).getService();
+            accelerateSensorService.setMsgListener(SensorActivity.this);
         }
 
         @Override
         public void onServiceDisconnected(ComponentName name) {
-            sensorService.setMsgListener(null);
+            accelerateSensorService.setMsgListener(null);
+        }
+    };
+
+    //加速度传感器服务
+    ServiceConnection gyroSensorServiceConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            gyroscopeSensorService = ((GyroscopeSensorService.Mbinder)service).getService();
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
         }
     };
 
@@ -118,37 +137,25 @@ public class SensorActivity extends Activity implements AccelerateSensorService.
     @Override
     protected void onResume() {
         super.onResume();
-        xArray = new ArrayList<>();
-        yArray = new ArrayList<>();
-        zArray = new ArrayList<>();
     }
 
     protected void onDestroy(){
         super.onDestroy();
-        sensorService.unregister();
-        stopService(sensorServiceIntent);
-        unbindService(sensorServiceConnection);
+        gyroscopeSensorService.unregister();
+        accelerateSensorService.unregister();
+        stopService(acceSensorServiceIntent);
+        stopService(gyroscopeServiceIntent);
+        unbindService(acceSensorServiceConnection);
+        unbindService(gyroSensorServiceConnection);
         stopRecord();
-        ifstop = 1;
 
-        Log.d("count",count+"");
-        Log.d("rawdata lenth", xArray.size() + "");
     }
 
 
 
-    //计算采样频率
-    private long time = 0;
-    private double diff = 0;
-    static int count = 0;
-    static int ifstop = 1;
-    //
     @Override
     public void getMsg(float x,float y,float z) {
-        if (ifstop == 1){
-            return;
-        }
-        count++;
+
 //        Log.d("count",count+"");
         //采样频率计算
 //        if(time == 0){
@@ -164,9 +171,7 @@ public class SensorActivity extends Activity implements AccelerateSensorService.
         //显示采样频率
 //        textViewValue.setText("symrate= " + diff + "");
         //
-        xArray.add(x);
-        yArray.add(y);
-        zArray.add(z);
+
         xTv.setText("x = " + x);
         yTv.setText("y = " + y);
         zTv.setText("z = " + z);
