@@ -13,19 +13,31 @@ import android.util.Log;
 
 import com.example.tommy.androidwear.Utils.SimpleRate;
 
+import java.util.ArrayList;
+
 /**
  * Created by Tommy on 2017/10/13.
  */
 
-public class AccelerateSensorService extends Service implements SensorEventListener{
+public class SensorService extends Service implements SensorEventListener{
 
     final String TAG = "SensorService";
     private SensorManager sensorManager;
     private Sensor accelerationSensor;
+    private Sensor gryoscopeSensor;
     private Mbinder mbinder = new Mbinder();
     private MsgListener msgListener;
     private SimpleRate simpleRate;
     float gravity = (float)9.8;
+
+    //静态变量用来缓存需要的数据
+    public static ArrayList<Float> xAcceArray = new ArrayList<>();
+    public static ArrayList<Float> yAcceArray = new ArrayList<>();
+    public static ArrayList<Float> zAcceArray = new ArrayList<>();
+    //静态变量用来缓存需要的数据
+    public static ArrayList<Float> xGyroArray = new ArrayList<>();
+    public static ArrayList<Float> yGyroArray = new ArrayList<>();
+    public static ArrayList<Float> zGyroArray = new ArrayList<>();
 
     public void onCreate(){
         super.onCreate();
@@ -33,7 +45,9 @@ public class AccelerateSensorService extends Service implements SensorEventListe
         sensorManager = (SensorManager)getSystemService(SENSOR_SERVICE);
         simpleRate = new SimpleRate();
         accelerationSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        gryoscopeSensor = sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
         sensorManager.registerListener(this,accelerationSensor,SensorManager.SENSOR_DELAY_FASTEST);
+        sensorManager.registerListener(this,gryoscopeSensor,SensorManager.SENSOR_DELAY_FASTEST);
     }
 
     @Nullable
@@ -44,19 +58,26 @@ public class AccelerateSensorService extends Service implements SensorEventListe
 
     @Override
     public void onSensorChanged(SensorEvent event) {
-//        if (msgListener == null){
-//            return;
-//        }else {
-//            msgListener.getMsg(event.values[2]);
-//        }
-        if(event.sensor.getType() != Sensor.TYPE_ACCELEROMETER)
-            return;
+
         if (msgListener == null)
             return;
-//        final float alpha = (float) 0.8;
-//        gravity = alpha * gravity  + (1-alpha)*event.values[2];
-//        float linearAcceleration = event.values[2]  - gravity;
-        msgListener.getMsg(event.values[0],event.values[1],event.values[2]);
+        synchronized (this){
+            switch (event.sensor.getType()){
+                case Sensor.TYPE_ACCELEROMETER:
+                    msgListener.getMsg(event.values[0],event.values[1],event.values[2]);
+                    xAcceArray.add(event.values[0]);
+                    yAcceArray.add(event.values[1]);
+                    zAcceArray.add(event.values[2]);
+                    break;
+                case Sensor.TYPE_GYROSCOPE:
+                    xGyroArray.add(event.values[0]);
+                    yGyroArray.add(event.values[1]);
+                    zGyroArray.add(event.values[2]);
+                    Log.i(TAG, "onSensorChanged: xgyro = "+ event.values[0]);
+                    break;
+            }
+        }
+
     }
 
     public void unregister(){
@@ -76,8 +97,8 @@ public class AccelerateSensorService extends Service implements SensorEventListe
     }
 
     public class Mbinder extends Binder{
-        public AccelerateSensorService getService(){
-            return AccelerateSensorService.this;
+        public SensorService getService(){
+            return SensorService.this;
         }
     }
 }

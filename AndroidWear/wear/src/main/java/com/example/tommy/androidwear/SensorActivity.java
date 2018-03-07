@@ -11,7 +11,6 @@ import android.widget.TextView;
 
 import com.example.tommy.androidwear.Audio.AudioRecorder;
 
-import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -19,18 +18,15 @@ import java.util.TimerTask;
  * Created by Tommy on 2017/10/13.
  */
 
-public class SensorActivity extends Activity implements AccelerateSensorService.MsgListener{
+public class SensorActivity extends Activity implements SensorService.MsgListener{
 
     private static final String TAG = "SensorActivity";
     private int durationTime;
     private TextView textViewValue;
     private DataView dataView;
-    //静态变量用来缓存需要的数据
-    public static ArrayList<Float> xArray = new ArrayList<>();
-    public static ArrayList<Float> yArray = new ArrayList<>();
-    public static ArrayList<Float> zArray = new ArrayList<>();
+
     //加速度服务
-    private AccelerateSensorService sensorService;
+    private SensorService sensorService;
     private Intent sensorServiceIntent;
     //录音服务
     AudioRecorder audioRecorder;
@@ -40,9 +36,6 @@ public class SensorActivity extends Activity implements AccelerateSensorService.
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sensor);
-        xArray = new ArrayList<>();
-        yArray = new ArrayList<>();
-        zArray = new ArrayList<>();
 
         xTv = (TextView)findViewById(R.id.xAxis);
         yTv = (TextView)findViewById(R.id.yAxis);
@@ -55,7 +48,7 @@ public class SensorActivity extends Activity implements AccelerateSensorService.
         dataView = (DataView)findViewById(R.id.dataView);
 
         //绑定服务（用来检测加速度）
-        sensorServiceIntent = new Intent(this,AccelerateSensorService.class);
+        sensorServiceIntent = new Intent(this,SensorService.class);
         bindService(sensorServiceIntent,sensorServiceConnection,BIND_AUTO_CREATE);
         startService(sensorServiceIntent);
 
@@ -93,7 +86,7 @@ public class SensorActivity extends Activity implements AccelerateSensorService.
     ServiceConnection sensorServiceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
-            sensorService = ((AccelerateSensorService.Mbinder)service).getService();
+            sensorService = ((SensorService.Mbinder)service).getService();
             sensorService.setMsgListener(SensorActivity.this);
         }
 
@@ -118,9 +111,6 @@ public class SensorActivity extends Activity implements AccelerateSensorService.
     @Override
     protected void onResume() {
         super.onResume();
-        xArray = new ArrayList<>();
-        yArray = new ArrayList<>();
-        zArray = new ArrayList<>();
     }
 
     protected void onDestroy(){
@@ -132,7 +122,7 @@ public class SensorActivity extends Activity implements AccelerateSensorService.
         ifstop = 1;
 
         Log.d("count",count+"");
-        Log.d("rawdata lenth", xArray.size() + "");
+
     }
 
 
@@ -149,24 +139,7 @@ public class SensorActivity extends Activity implements AccelerateSensorService.
             return;
         }
         count++;
-//        Log.d("count",count+"");
-        //采样频率计算
-//        if(time == 0){
-//            time = System.currentTimeMillis();
-//        }else{
-//
-//            diff = ((System.currentTimeMillis() - time)/1000.0);
-//            Log.d("diff",diff+"" );
-//            time = System.currentTimeMillis();
-//        }
-        //
-//        dataView.updateView(z);
-        //显示采样频率
-//        textViewValue.setText("symrate= " + diff + "");
-        //
-        xArray.add(x);
-        yArray.add(y);
-        zArray.add(z);
+
         xTv.setText("x = " + x);
         yTv.setText("y = " + y);
         zTv.setText("z = " + z);

@@ -28,7 +28,7 @@
             android:label="AndroidWear">
         </activity>
         <service
-            android:name=".AccelerateSensorService"
+            android:name=".SensorService"
             android:label="AndroiWear">
         </service>
     </application>
