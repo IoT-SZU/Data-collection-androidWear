@@ -73,7 +73,6 @@ public class SensorService extends Service implements SensorEventListener{
                     xGyroArray.add(event.values[0]);
                     yGyroArray.add(event.values[1]);
                     zGyroArray.add(event.values[2]);
-                    Log.i(TAG, "onSensorChanged: xgyro = "+ event.values[0]);
                     break;
             }
         }
