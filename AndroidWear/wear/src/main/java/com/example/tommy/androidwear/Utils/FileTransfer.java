@@ -119,6 +119,23 @@ public class FileTransfer implements DataApi.DataListener{
         }
     }
 
+    public void sendThroughFTP(String FileName,String[] key,File[] files){
+        if (key.length != files.length){
+            Log.i(TAG, "Error :key length not equal to file length");
+            return;
+        }
+        FTPUtils.getInstance().initFTPSetting("172.31.73.52",21,"Gryffindor","Alohomora");
+        for (File file :files){
+            Log.i(TAG, "onSend: "+file.getName());
+
+            if (FTPUtils.getInstance().uploadFile(file.getAbsolutePath(),file.getName())){
+                Log.i(TAG, "onSend: "+file.getName()+"  --success");
+            }else{
+                Log.i(TAG, "onSend: " + file.getName() + "   --failed");
+            }
+        }
+    }
+
     public void send(String type,String[] key,File[] file){
         if (key.length != file.length){
             Log.i(TAG, "Error :key length not equal to file length");

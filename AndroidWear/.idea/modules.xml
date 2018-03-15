@@ -4,10 +4,13 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/AndroidWear.iml" filepath="$PROJECT_DIR$/AndroidWear.iml" />
       <module fileurl="file://C:\Users\Administrator\Desktop\iotTYPING\HBtyping\iot\Android代码\采集数据app\AndroidWear\AndroidWear.iml" filepath="C:\Users\Administrator\Desktop\iotTYPING\HBtyping\iot\Android代码\采集数据app\AndroidWear\AndroidWear.iml" />
+      <module fileurl="file://E:\Documents\GitHub\Data-collection-androidWear\AndroidWear\AndroidWear.iml" filepath="E:\Documents\GitHub\Data-collection-androidWear\AndroidWear\AndroidWear.iml" />
       <module fileurl="file://$PROJECT_DIR$/mobile/mobile.iml" filepath="$PROJECT_DIR$/mobile/mobile.iml" />
       <module fileurl="file://C:\Users\Administrator\Desktop\iotTYPING\HBtyping\iot\Android代码\采集数据app\AndroidWear\mobile\mobile.iml" filepath="C:\Users\Administrator\Desktop\iotTYPING\HBtyping\iot\Android代码\采集数据app\AndroidWear\mobile\mobile.iml" />
+      <module fileurl="file://E:\Documents\GitHub\Data-collection-androidWear\AndroidWear\mobile\mobile.iml" filepath="E:\Documents\GitHub\Data-collection-androidWear\AndroidWear\mobile\mobile.iml" />
       <module fileurl="file://$PROJECT_DIR$/wear/wear.iml" filepath="$PROJECT_DIR$/wear/wear.iml" />
       <module fileurl="file://C:\Users\Administrator\Desktop\iotTYPING\HBtyping\iot\Android代码\采集数据app\AndroidWear\wear\wear.iml" filepath="C:\Users\Administrator\Desktop\iotTYPING\HBtyping\iot\Android代码\采集数据app\AndroidWear\wear\wear.iml" />
+      <module fileurl="file://E:\Documents\GitHub\Data-collection-androidWear\AndroidWear\wear\wear.iml" filepath="E:\Documents\GitHub\Data-collection-androidWear\AndroidWear\wear\wear.iml" />
     </modules>
   </component>
 </project>
