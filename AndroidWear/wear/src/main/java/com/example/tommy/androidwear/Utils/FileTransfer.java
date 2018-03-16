@@ -119,12 +119,13 @@ public class FileTransfer implements DataApi.DataListener{
         }
     }
 
-    public void sendThroughFTP(String FileName,String[] key,File[] files){
-        if (key.length != files.length){
-            Log.i(TAG, "Error :key length not equal to file length");
-            return;
+    public boolean sendThroughFTP(String FileName,File[] files){
+        if(!FileName.equals("anonymous") || !FileName.equals("")) {
+            FTPUtils.PATH_NAME = "/"+FileName+new SimpleDateFormat("yyyy_MM_dd").format(new Date());
         }
-        FTPUtils.getInstance().initFTPSetting("172.31.73.52",21,"Gryffindor","Alohomora");
+        if(!FTPUtils.getInstance().initFTPSetting("172.31.73.45",21,"admin","654321")){
+            return false;
+        }
         for (File file :files){
             Log.i(TAG, "onSend: "+file.getName());
 
@@ -132,8 +133,10 @@ public class FileTransfer implements DataApi.DataListener{
                 Log.i(TAG, "onSend: "+file.getName()+"  --success");
             }else{
                 Log.i(TAG, "onSend: " + file.getName() + "   --failed");
+                return false;
             }
         }
+        return true;
     }
 
     public void send(String type,String[] key,File[] file){

@@ -41,7 +41,7 @@ public class SensorService extends Service implements SensorEventListener{
 
     public void onCreate(){
         super.onCreate();
-        Log.i(TAG, "onCreate: ");
+        Log.i(TAG, "onCreate: SensorService");
         sensorManager = (SensorManager)getSystemService(SENSOR_SERVICE);
         simpleRate = new SimpleRate();
         accelerationSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);

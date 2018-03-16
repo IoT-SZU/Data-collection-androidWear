@@ -1,6 +1,7 @@
 package com.example.tommy.androidwear.Utils;
 
 import android.os.StrictMode;
+import android.util.Log;
 
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
@@ -12,9 +13,13 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.Inet4Address;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Enumeration;
 
 /**
  * Created by Tommy on 2018/1/17.
@@ -22,7 +27,7 @@ import java.util.Date;
 
 public class FTPUtils {
 
-    private final String PATH_NAME  = "/data"+ new SimpleDateFormat("yyyy_MM_dd_hhmm").format(new Date());
+    public static String PATH_NAME  = "/data"+ new SimpleDateFormat("yyyy_MM_dd_hhmm").format(new Date());
     private FTPClient ftpClient = null;
     private static FTPUtils ftpUtilsInstance = null;
     private String FTPUrl;
@@ -65,14 +70,19 @@ public class FTPUtils {
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
         try {
+            // 获得本机的所有网络接口
+            Log.d("ftp info",FTPUrl+":"+FTPPort);
             //1.要连接的FTP服务器Url,Port
             ftpClient.connect(FTPUrl, FTPPort);
+            Log.d("connected","success");
 
             //2.登陆FTP服务器
             ftpClient.login(UserName, UserPassword);
 
+
             //3.看返回的值是不是230，如果是，表示登陆成功
             reply = ftpClient.getReplyCode();
+            Log.d("login","success");
 
             if (!FTPReply.isPositiveCompletion(reply))
             {

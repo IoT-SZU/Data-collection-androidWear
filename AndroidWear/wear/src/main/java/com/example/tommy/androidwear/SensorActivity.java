@@ -24,7 +24,11 @@ public class SensorActivity extends Activity implements SensorService.MsgListene
     private int durationTime;
     private TextView textViewValue;
     private DataView dataView;
-
+    public static States_Set CStates;
+    public enum States_Set{
+        finished,
+        infinished
+    }
     //加速度服务
     private SensorService sensorService;
     private Intent sensorServiceIntent;
@@ -37,6 +41,8 @@ public class SensorActivity extends Activity implements SensorService.MsgListene
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sensor);
 
+        CStates = States_Set.infinished;
+
         xTv = (TextView)findViewById(R.id.xAxis);
         yTv = (TextView)findViewById(R.id.yAxis);
         zTv = (TextView)findViewById(R.id.zAxis);
@@ -44,8 +50,7 @@ public class SensorActivity extends Activity implements SensorService.MsgListene
         Intent intent = getIntent();
 
         durationTime = Integer.parseInt(intent.getExtras().get("time").toString());
-        textViewValue = (TextView)findViewById(R.id.value);
-        dataView = (DataView)findViewById(R.id.dataView);
+
 
         //绑定服务（用来检测加速度）
         sensorServiceIntent = new Intent(this,SensorService.class);
@@ -66,7 +71,7 @@ public class SensorActivity extends Activity implements SensorService.MsgListene
     public void startRecord(){
         if (audioRecorder.getStatus() == AudioRecorder.Status.STATUS_NO_READY) {
             //初始化录音
-            audioRecorder.createDefaultAudio("pcmData");
+            audioRecorder.createDefaultAudio("pcmData"+MainActivity.Filenum);
             audioRecorder.startRecord(null);
         }
     }
@@ -74,6 +79,8 @@ public class SensorActivity extends Activity implements SensorService.MsgListene
 
     public void stopRecord(){
         audioRecorder.stopRecord();
+        CStates = States_Set.finished;
+        MainActivity.SStatus = MainActivity.SaveState.Latest;
     }
 
     public void pauseRecord(){

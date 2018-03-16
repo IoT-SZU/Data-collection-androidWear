@@ -152,6 +152,7 @@ public class AudioRecorder {
                 //将多个pcm文件转化为wav文件
                 //mergePCMFilesToWAVFile(filePaths);
                 MainActivity.PCM_PATH =  PcmToWav.mergePCMFiles(filePaths);
+                Log.d("PCM_PATH",MainActivity.PCM_PATH);
             } else {
                 //这里由于只要录音过filesName.size都会大于0,没录音时fileName为null
                 //会报空指针 NullPointerException
@@ -200,8 +201,8 @@ public class AudioRecorder {
         try {
             String currentFileName = fileName;
             if (status == Status.STATUS_PAUSE) {
-                //假如是暂停录音 将文件名后面加个数字,防止重名文件内容被覆盖
-                currentFileName += filesName.size();
+                //假如是暂停录音 将文件名后面加个'_数字',防止重名文件内容被覆盖
+                currentFileName += "_"+filesName.size();
 
             }
             filesName.add(currentFileName);
