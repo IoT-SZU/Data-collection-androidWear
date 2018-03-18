@@ -123,7 +123,7 @@ public class FileTransfer implements DataApi.DataListener{
         if(!FileName.equals("anonymous") || !FileName.equals("")) {
             FTPUtils.PATH_NAME = "/"+FileName+new SimpleDateFormat("yyyy_MM_dd").format(new Date());
         }
-        if(!FTPUtils.getInstance().initFTPSetting("172.31.73.45",21,"admin","654321")){
+        if(!FTPUtils.getInstance().initFTPSetting("172.31.73.52",21,"Gryffindor","Alohomora")){
             return false;
         }
         for (File file :files){

@@ -12,6 +12,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.tommy.androidwear.Audio.AudioRecorder;
+import com.example.tommy.androidwear.Audio.PcmToWav;
 import com.example.tommy.androidwear.Utils.DBHelper;
 import com.example.tommy.androidwear.Utils.FileTransfer;
 
@@ -35,14 +37,22 @@ public class MainActivity extends Activity{
     private DBHelper dbHelper;
     private SQLiteDatabase sqLiteDatabase;
     FileTransfer fileTransfer;
-    static int Filenum = 0;
-    public static SaveState SStatus;
-    public enum SaveState{
-
-        Empty,
-        Pre,
-        Latest
+    static int Filenum = 1;
+    public static int SStatus;
+    public static class SaveState{
+        static int Empty = 1,Pre = 2,Latest = 3;
     }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt("filenum",Filenum);
+        outState.putString("filename", FileNameSpace.getText() + "");
+        outState.putString("fileLabel", CfileLabel.getText()+"");
+        outState.putInt("SStates",SStatus);
+
+    }
+
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,7 +62,7 @@ public class MainActivity extends Activity{
         setContentView(R.layout.activity_main);
 
         final WatchViewStub stub = (WatchViewStub) findViewById(R.id.watch_view_stub);
-        SStatus = SaveState.Empty;
+
 
         stub.setOnLayoutInflatedListener(new WatchViewStub.OnLayoutInflatedListener() {
             @Override
@@ -141,17 +151,8 @@ public class MainActivity extends Activity{
                     @Override
                     public void onClick(View v) {
                         if(SStatus == SaveState.Latest) {
-                            Toast.makeText(MainActivity.this, Filenum + " Saved!", Toast.LENGTH_SHORT).show();
-                            Filenum++;
-                            CfileLabel.setText("No." + Filenum);
-                            SStatus = SaveState.Pre;
-                            if (!wipeDataButton.isEnabled()) {
-                                wipeDataButton.setEnabled(true);
-                            }
-                            if (!genrateButton.isEnabled()){
-                                genrateButton.setEnabled(true);
-                            }
-                            saveDataButton.setEnabled(false);
+                            genrateButton.setEnabled(false);
+                            wipeDataButton.setEnabled(false);
                             new Thread(new Runnable() {
                                 @Override
                                 public void run() {
@@ -170,20 +171,55 @@ public class MainActivity extends Activity{
                                         }
                                     });
                                     onGenerate();
+
                                     runOnUiThread(new Runnable() {
                                         @Override
                                         public void run() {
+                                            Toast.makeText(MainActivity.this, Filenum + " Saved!", Toast.LENGTH_SHORT).show();
+                                            Filenum++;
+                                            CfileLabel.setText("No." + Filenum);
                                             startButton.setEnabled(true);
+                                            genrateButton.setEnabled(true);
+                                            wipeDataButton.setEnabled(true);
                                         }
                                     });
                                 }
                             }).start();
+
+
+
+                            SStatus = SaveState.Pre;
+
+
+                            saveDataButton.setEnabled(false);
+
                         }
                     }
                 });
             }
         });
+        if (savedInstanceState == null) {
+            SStatus = SaveState.Empty;
+            Filenum = 1;
+        } else{
+//            outState.putInt("filenum",Filenum);
+//            outState.putString("filename", FileNameSpace.getText() + "");
+//            outState.putString("fileLabel", CfileLabel.getText()+"");
+//            outState.putInt("SStates",SStatus);
+            Log.d("onCreate","reload situation...");
+            if (savedInstanceState.getInt("SStates") != SaveState.Empty){
+                SStatus = SaveState.Pre;
+                Filenum = savedInstanceState.getInt("filenum");
+                FileNameSpace.setText(savedInstanceState.getString("filename"));
+                CfileLabel.setText(savedInstanceState.getString("fileLabel"));
+                genrateButton.setEnabled(true);
+                wipeDataButton.setEnabled(true);
+            }else{
+                SStatus = SaveState.Empty;
+                Filenum = 1;
+            }
 
+        }
         dbHelper = new DBHelper(this);
         sqLiteDatabase = dbHelper.getReadableDatabase();
         fileTransfer = new FileTransfer(this);
@@ -207,7 +243,6 @@ public class MainActivity extends Activity{
         intent.putExtra("time",time);
         intent.setClass(MainActivity.this,SensorActivity.class);
         startActivity(intent);
-        startButton.setEnabled(false);
         if(!saveDataButton.isEnabled()){
             saveDataButton.setEnabled(true);
         }
@@ -218,10 +253,7 @@ public class MainActivity extends Activity{
     @Override
     protected void onResume() {
         super.onResume();
-        Filenum = 1;
 
-
-//
         fileTransfer.connect();
     }
 
@@ -235,17 +267,18 @@ public class MainActivity extends Activity{
 
     void onGenerate(){
         //保存文件到手表中
-        File xAcceDataFile = writeArrayFile(SensorService.xAcceArray,"xAcceData"+Filenum+".txt");
-        File yAcceDataFile = writeArrayFile(SensorService.yAcceArray,"yAcceData"+Filenum+".txt");
-        File zAcceDataFile = writeArrayFile(SensorService.zAcceArray,"zAcceData"+Filenum+".txt");
+        File xAcceDataFile = writeArrayFile(SensorService.xAcceArray,"xAcceDataAsset"+Filenum);
+        File yAcceDataFile = writeArrayFile(SensorService.yAcceArray,"yAcceDataAsset"+Filenum);
+        File zAcceDataFile = writeArrayFile(SensorService.zAcceArray,"zAcceDataAsset"+Filenum);
 
-        File xGyroDataFile = writeArrayFile(SensorService.xGyroArray,"xGyroData"+Filenum+".txt");
-        File yGyroDataFile = writeArrayFile(SensorService.yGyroArray,"yGyroData"+Filenum+".txt");
-        File zGyroDataFile = writeArrayFile(SensorService.zGyroArray,"zGyroData"+Filenum+".txt");
+        File xGyroDataFile = writeArrayFile(SensorService.xGyroArray,"xGyroData"+Filenum);
+        File yGyroDataFile = writeArrayFile(SensorService.yGyroArray,"yGyroData"+Filenum);
+        File zGyroDataFile = writeArrayFile(SensorService.zGyroArray,"zGyroData"+Filenum);
 //        File audioDataFile = new File(FileUtils.getWavFileAbsolutePath("test"));
 //        Log.i(TAG, "onGenerate: " + FileUtils.getWavFileAbsolutePath("test"));
-        File audioDataFile = new File(PCM_PATH);
-        Log.i(TAG, "onGenerate: audioDataFile size = " + audioDataFile.length());
+
+        File PcmFile = new File(PCM_PATH);
+        Log.i(TAG, "onGenerate: audioDataFile size = " + PcmFile.length());
         Log.i(TAG, "onGenerate: " +PCM_PATH);
         // 保存Files文件
         SendingFiles.add(xAcceDataFile);
@@ -254,7 +287,7 @@ public class MainActivity extends Activity{
         SendingFiles.add(xGyroDataFile);
         SendingFiles.add(yGyroDataFile);
         SendingFiles.add(zGyroDataFile);
-        SendingFiles.add(audioDataFile);
+        SendingFiles.add(PcmFile);
 
 
 

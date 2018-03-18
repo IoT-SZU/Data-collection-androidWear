@@ -23,10 +23,10 @@ public class AudioRecorder {
     private static AudioRecorder audioRecorder;
     //音频输入-麦克风
     private final static int AUDIO_INPUT = MediaRecorder.AudioSource.MIC;
-    //采用频率
+    //采用频率 4k ~ 192k
     //44100是目前的标准，但是某些设备仍然支持22050，16000，11025
     //采样频率一般共分为22.05KHz、44.1KHz、48KHz三个等级
-    private final static int AUDIO_SAMPLE_RATE = 44100;
+    public final static int AUDIO_SAMPLE_RATE = 44100;
     //声道 单声道
     private final static int AUDIO_CHANNEL = AudioFormat.CHANNEL_IN_STEREO;
     //编码
@@ -78,6 +78,10 @@ public class AudioRecorder {
         // 获得缓冲区字节大小
         bufferSizeInBytes = AudioRecord.getMinBufferSize(AUDIO_SAMPLE_RATE,
                 AUDIO_CHANNEL, AUDIO_ENCODING);
+        if (audioRecord != null) {
+            audioRecord.release();
+            audioRecord = null;
+        }
         audioRecord = new AudioRecord(AUDIO_INPUT, AUDIO_SAMPLE_RATE, AUDIO_CHANNEL, AUDIO_ENCODING, bufferSizeInBytes);
         this.fileName = fileName;
         status = Status.STATUS_READY;
@@ -97,13 +101,15 @@ public class AudioRecorder {
         if (status == Status.STATUS_START) {
             throw new IllegalStateException("正在录音");
         }
-        Log.d("AudioRecorder","===startRecord==="+audioRecord.getState());
         audioRecord.startRecording();
+
 
         new Thread(new Runnable() {
             @Override
             public void run() {
                 writeDataTOFile(listener);
+
+
             }
         }).start();
     }
@@ -220,10 +226,23 @@ public class AudioRecorder {
         }
         //将录音状态设置成正在录音状态
         status = Status.STATUS_START;
+        Log.d("AudioRecorder","===startRecord==="+audioRecord.getState());
+
         while (status == Status.STATUS_START) {
-            readsize = audioRecord.read(audiodata, 0, bufferSizeInBytes);
-            if (AudioRecord.ERROR_INVALID_OPERATION != readsize && fos != null) {
+            int length = bufferSizeInBytes;
+            readsize = 0;
+
+            while (length > 0 &&  AudioRecord.ERROR_INVALID_OPERATION != readsize && fos != null) {
+                int read = 0;
+                if (audioRecord != null)
+                    read= audioRecord.read(audiodata,readsize,length);
+                else break;
+                length -= read;
+                readsize += read;
+            }
+            if (AudioRecord.ERROR_BAD_VALUE != readsize && AudioRecord.ERROR_INVALID_OPERATION != readsize && fos != null) {
                 try {
+                    Log.d("reading",audiodata[0]+"");
                     fos.write(audiodata);
                     if (listener != null) {
                         //用于拓展业务
@@ -233,7 +252,10 @@ public class AudioRecorder {
                     Log.e("AudioRecorder", e.getMessage());
                 }
             }
+            Log.d("readsize",readsize+"");
+
         }
+        Log.d("AudioRecorder","===stopRecord===");
         try {
             if (fos != null) {
                 fos.close();// 关闭写入流

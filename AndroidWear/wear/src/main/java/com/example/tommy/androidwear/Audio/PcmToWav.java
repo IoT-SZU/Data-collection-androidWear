@@ -29,6 +29,78 @@ public class PcmToWav {
     }
 
     /**
+     *
+     * @param pcmFile pcm格式的音频文件
+     * @param delFile 是否删除原来的pcm文件
+     * @param sampleRate 采样频率
+     * @param backNum 文件后缀名的数字
+     * @return
+     */
+    public static File GetNewWavFile(File pcmFile,boolean delFile,int sampleRate,int backNum){
+        byte buffer[] = null;
+        int TOTAL_SIZE = 0;
+        File file = pcmFile;
+        if (!file.exists()) {
+            return null;
+        }
+        TOTAL_SIZE = (int) file.length();
+        // 填入参数，比特率等等。这里用的是16位单声道 8000 hz
+        WaveHeader header = new WaveHeader();
+        // 长度字段 = 内容的大小（TOTAL_SIZE) +
+        // 头部字段的大小(不包括前面4字节的标识符RIFF以及fileLength本身的4字节)
+        header.fileLength = TOTAL_SIZE + (44 - 8);
+        header.FmtHdrLeth = 16;
+        header.BitsPerSample = 16;
+        header.Channels = 2;
+        header.FormatTag = 0x0001;
+        header.SamplesPerSec = sampleRate;
+        header.BlockAlign = (short) (header.Channels * header.BitsPerSample / 8);
+        header.AvgBytesPerSec = header.BlockAlign * header.SamplesPerSec;
+        header.DataHdrLeth = TOTAL_SIZE;
+
+        byte[] h = null;
+        try {
+            h = header.getHeader();
+        } catch (IOException e1) {
+            Log.e("PcmToWav", e1.getMessage());
+            return null;
+        }
+
+        if (h.length != 44) // WAV标准，头部应该是44字节,如果不是44个字节则不进行转换文件
+            return null;
+        String buffpath = file.getParent()+"/wavAudio"+backNum+".wav";
+        //合成所有的pcm文件的数据，写到目标文件
+        try {
+            buffer = new byte[1024 * 4]; // Length of All Files, Total Size
+            InputStream inStream = null;
+            OutputStream ouStream = null;
+
+            ouStream = new BufferedOutputStream(new FileOutputStream(
+                    buffpath));
+            ouStream.write(h, 0, h.length);
+            inStream = new BufferedInputStream(new FileInputStream(file));
+            int size = inStream.read(buffer);
+            while (size != -1) {
+                ouStream.write(buffer);
+                size = inStream.read(buffer);
+            }
+            inStream.close();
+            ouStream.close();
+        } catch (FileNotFoundException e) {
+            Log.e("PcmToWav", e.getMessage());
+            return null;
+        } catch (IOException ioe) {
+            Log.e("PcmToWav", ioe.getMessage());
+            return null;
+        }
+        if (delFile) {
+            file.delete();
+        }
+        Log.i("PcmToWav", "makePCMFileToWAVFile  success!" + new SimpleDateFormat("yyyy-MM-dd hh:mm").format(new Date()));
+        return new File(buffpath);
+    }
+
+    /**
      * 合并多个pcm文件为一个wav文件
      *
      * @param filePathList    pcm文件路径集合
@@ -57,7 +129,7 @@ public class PcmToWav {
         header.BitsPerSample = 16;
         header.Channels = 2;
         header.FormatTag = 0x0001;
-        header.SamplesPerSec = 8000;
+        header.SamplesPerSec = AudioRecorder.AUDIO_SAMPLE_RATE;
         header.BlockAlign = (short) (header.Channels * header.BitsPerSample / 8);
         header.AvgBytesPerSec = header.BlockAlign * header.SamplesPerSec;
         header.DataHdrLeth = TOTAL_SIZE;

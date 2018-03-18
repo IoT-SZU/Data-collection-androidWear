@@ -41,7 +41,7 @@ public class SensorService extends Service implements SensorEventListener{
 
     public void onCreate(){
         super.onCreate();
-        Log.i(TAG, "onCreate: SensorService");
+        Log.i(TAG, "onCreate: ");
         sensorManager = (SensorManager)getSystemService(SENSOR_SERVICE);
         simpleRate = new SimpleRate();
         accelerationSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
@@ -61,23 +61,28 @@ public class SensorService extends Service implements SensorEventListener{
 
         if (msgListener == null)
             return;
-        synchronized (this){
-            switch (event.sensor.getType()){
-                case Sensor.TYPE_ACCELEROMETER:
-                    msgListener.getMsg(event.values[0],event.values[1],event.values[2]);
+
+        switch (event.sensor.getType()) {
+
+            case Sensor.TYPE_ACCELEROMETER:
+                synchronized (this) {
+                    msgListener.getMsg(event.values[0], event.values[1], event.values[2]);
                     xAcceArray.add(event.values[0]);
                     yAcceArray.add(event.values[1]);
                     zAcceArray.add(event.values[2]);
-                    break;
-                case Sensor.TYPE_GYROSCOPE:
+                }
+                break;
+            case Sensor.TYPE_GYROSCOPE:
+                synchronized (this) {
                     xGyroArray.add(event.values[0]);
                     yGyroArray.add(event.values[1]);
                     zGyroArray.add(event.values[2]);
-                    break;
-            }
+                }
+                break;
         }
-
     }
+
+
 
     public void unregister(){
         sensorManager.unregisterListener(this);
