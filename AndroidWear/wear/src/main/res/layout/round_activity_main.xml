@@ -11,10 +11,11 @@
         android:id="@+id/durationTime"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="24dp"
+        android:layout_toEndOf="@+id/wipeData"
         android:text="30"
-        android:textAlignment="center"
-        android:layout_marginTop="20dp"
-        android:layout_centerHorizontal="true"/>
+        android:textAlignment="center" />
 
     <EditText
         android:id="@+id/EnterName"
@@ -36,31 +37,31 @@
         android:text="No.1"
         android:padding="19px"
         android:textAlignment="center" />
+
     <Button
         android:id="@+id/startButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
 
+        android:layout_alignParentStart="true"
         android:layout_below="@+id/EnterName"
-        android:layout_toStartOf="@+id/wipeData"
-
         android:text="开始" />
 
     <Button
         android:id="@+id/saveData"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_below="@+id/startButton"
+        android:layout_centerHorizontal="true"
         android:enabled="false"
-        android:layout_alignBaseline="@+id/startButton"
-        android:layout_alignBottom="@+id/startButton"
-        android:layout_toEndOf="@+id/startButton"
         android:text="保存" />
+
     <Button
         android:id="@+id/generateFile"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/EnterName"
-        android:layout_toEndOf="@+id/wipeData"
+        android:layout_above="@+id/saveData"
+        android:layout_alignParentEnd="true"
         android:enabled="false"
         android:text="发送" />
 
@@ -68,8 +69,8 @@
         android:id="@+id/wipeData"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_above="@+id/EnterName"
+        android:layout_alignParentStart="true"
         android:enabled="false"
-        android:layout_below="@+id/saveData"
-        android:layout_centerHorizontal="true"
         android:text="清除" />
 </RelativeLayout>

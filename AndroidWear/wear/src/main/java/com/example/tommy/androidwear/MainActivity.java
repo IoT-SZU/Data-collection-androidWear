@@ -1,8 +1,11 @@
 package com.example.tommy.androidwear;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.wearable.view.WatchViewStub;
 import android.util.Log;
@@ -21,6 +24,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 
 import static com.example.tommy.androidwear.MainActivity.SaveState.Pre;
@@ -50,9 +54,20 @@ public class MainActivity extends Activity{
         outState.putString("filename", FileNameSpace.getText() + "");
         outState.putString("fileLabel", CfileLabel.getText()+"");
         outState.putInt("SStates",SStatus);
-
     }
 
+    public static boolean isNetworkConnected(Context context) {
+
+        if (context != null) {
+            ConnectivityManager mConnectivityManager = (ConnectivityManager) context
+                    .getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo mNetworkInfo = mConnectivityManager.getActiveNetworkInfo();
+            if (mNetworkInfo != null) {
+                return mNetworkInfo.isAvailable();
+            }
+        }
+        return false;
+    }
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -90,7 +105,8 @@ public class MainActivity extends Activity{
                                 public void run() {
                                     if(!fileTransfer.sendThroughFTP(
                                             FileNameSpace.getText() + "",
-                                            (File[]) SendingFiles.toArray(new File[SendingFiles.size()]))){
+                                            (File[]) SendingFiles.toArray(new File[SendingFiles.size()]),
+                                            MainActivity.this)){
                                         runOnUiThread(new Runnable() {
                                             @Override
                                             public void run() {
@@ -143,6 +159,7 @@ public class MainActivity extends Activity{
                 startButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+
                         onService();
 
                     }
@@ -242,10 +259,15 @@ public class MainActivity extends Activity{
         Intent intent = new Intent();
         intent.putExtra("time",time);
         intent.setClass(MainActivity.this,SensorActivity.class);
+        SensorActivity.ifstop = 0;
         startActivity(intent);
         if(!saveDataButton.isEnabled()){
             saveDataButton.setEnabled(true);
         }
+        if(!startButton.isEnabled()){
+            startButton.setEnabled(true);
+        }
+
     }
 
 
@@ -253,7 +275,6 @@ public class MainActivity extends Activity{
     @Override
     protected void onResume() {
         super.onResume();
-
         fileTransfer.connect();
     }
 
@@ -267,19 +288,19 @@ public class MainActivity extends Activity{
 
     void onGenerate(){
         //保存文件到手表中
-        File xAcceDataFile = writeArrayFile(SensorService.xAcceArray,"xAcceDataAsset"+Filenum);
-        File yAcceDataFile = writeArrayFile(SensorService.yAcceArray,"yAcceDataAsset"+Filenum);
-        File zAcceDataFile = writeArrayFile(SensorService.zAcceArray,"zAcceDataAsset"+Filenum);
+        File xAcceDataFile = writeArrayFile(SensorService.xAcceArray,"xAcceDataAsset"+(Filenum-1));
+        File yAcceDataFile = writeArrayFile(SensorService.yAcceArray,"yAcceDataAsset"+(Filenum-1));
+        File zAcceDataFile = writeArrayFile(SensorService.zAcceArray,"zAcceDataAsset"+(Filenum-1));
 
-        File xGyroDataFile = writeArrayFile(SensorService.xGyroArray,"xGyroData"+Filenum);
-        File yGyroDataFile = writeArrayFile(SensorService.yGyroArray,"yGyroData"+Filenum);
-        File zGyroDataFile = writeArrayFile(SensorService.zGyroArray,"zGyroData"+Filenum);
+        File xGyroDataFile = writeArrayFile(SensorService.xGyroArray,"xGyroData"+(Filenum-1));
+        File yGyroDataFile = writeArrayFile(SensorService.yGyroArray,"yGyroData"+(Filenum-1));
+        File zGyroDataFile = writeArrayFile(SensorService.zGyroArray,"zGyroData"+(Filenum-1));
 //        File audioDataFile = new File(FileUtils.getWavFileAbsolutePath("test"));
 //        Log.i(TAG, "onGenerate: " + FileUtils.getWavFileAbsolutePath("test"));
 
-        File PcmFile = new File(PCM_PATH);
-        Log.i(TAG, "onGenerate: audioDataFile size = " + PcmFile.length());
-        Log.i(TAG, "onGenerate: " +PCM_PATH);
+//        File PcmFile = new File(PCM_PATH);
+//        Log.i(TAG, "onGenerate: audioDataFile size = " + PcmFile.length());
+//        Log.i(TAG, "onGenerate: " +PCM_PATH);
         // 保存Files文件
         SendingFiles.add(xAcceDataFile);
         SendingFiles.add(yAcceDataFile);
@@ -287,7 +308,7 @@ public class MainActivity extends Activity{
         SendingFiles.add(xGyroDataFile);
         SendingFiles.add(yGyroDataFile);
         SendingFiles.add(zGyroDataFile);
-        SendingFiles.add(PcmFile);
+//        SendingFiles.add(PcmFile);
 
 
 

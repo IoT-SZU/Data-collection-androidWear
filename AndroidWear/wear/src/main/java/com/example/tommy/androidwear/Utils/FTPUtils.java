@@ -49,7 +49,6 @@ public class FTPUtils {
         }
         return ftpUtilsInstance;
     }
-
     /**
      * 设置FTP服务器
      * @param FTPUrl   FTP服务器ip地址
@@ -73,7 +72,9 @@ public class FTPUtils {
             // 获得本机的所有网络接口
             Log.d("ftp info",FTPUrl+":"+FTPPort);
             //1.要连接的FTP服务器Url,Port
+
             ftpClient.connect(FTPUrl, FTPPort);
+
             Log.d("connected","success");
 
             //2.登陆FTP服务器

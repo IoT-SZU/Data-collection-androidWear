@@ -57,10 +57,10 @@ public class SensorActivity extends Activity implements SensorService.MsgListene
         bindService(sensorServiceIntent,sensorServiceConnection,BIND_AUTO_CREATE);
         startService(sensorServiceIntent);
 
-        audioRecorder = AudioRecorder.getInstance();
-
-
-        startRecord();
+//        audioRecorder = AudioRecorder.getInstance();
+//
+//
+//        startRecord();
         Log.d("count",count+"");
         count = 0;
         ifstop = 0;
@@ -78,7 +78,7 @@ public class SensorActivity extends Activity implements SensorService.MsgListene
 
 
     public void stopRecord(){
-        audioRecorder.stopRecord();
+//        audioRecorder.stopRecord();
         CStates = States_Set.finished;
         MainActivity.SStatus = MainActivity.SaveState.Latest;
     }
@@ -109,6 +109,7 @@ public class SensorActivity extends Activity implements SensorService.MsgListene
         TimerTask mTimerTask = new TimerTask() {//创建一个线程来执行run方法中的代码
             @Override
             public void run() {
+
                 finish();
             }
         };
@@ -138,7 +139,7 @@ public class SensorActivity extends Activity implements SensorService.MsgListene
     private long time = 0;
     private double diff = 0;
     static int count = 0;
-    static int ifstop = 1;
+    public static int ifstop = 1;
     //
     @Override
     public void getMsg(float x,float y,float z) {
