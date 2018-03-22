@@ -124,7 +124,7 @@ public class FileTransfer implements DataApi.DataListener{
         if(!FileName.equals("anonymous") || !FileName.equals("")) {
             FTPUtils.PATH_NAME = "/"+FileName+new SimpleDateFormat("yyyy_MM_dd").format(new Date());
         }
-        if (!MainActivity.isNetworkConnected(context)){
+        if (!MainActivity.isWifiConnected(context)){
             return false;
         }
         if(!FTPUtils.getInstance().initFTPSetting("172.31.73.52",21,"Gryffindor","Alohomora")){
