@@ -7,6 +7,7 @@ import android.os.ParcelFileDescriptor;
 import android.util.Log;
 
 import com.example.tommy.androidwear.MainActivity;
+import com.example.tommy.androidwear.StaticConfig;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
@@ -122,12 +123,12 @@ public class FileTransfer implements DataApi.DataListener{
 
     public boolean sendThroughFTP(String FileName,File[] files,Context context){
         if(!FileName.equals("anonymous") || !FileName.equals("")) {
-            FTPUtils.PATH_NAME = "/"+FileName+new SimpleDateFormat("yyyy_MM_dd").format(new Date());
+            StaticConfig.FINAL_PATH = "/"+FileName+new SimpleDateFormat("yyyy_MM_dd").format(new Date());
         }
         if (!MainActivity.isWifiConnected(context)){
             return false;
         }
-        if(!FTPUtils.getInstance().initFTPSetting("172.31.73.52",21,"Gryffindor","Alohomora")){
+        if(!FTPUtils.getInstance().initFTPSetting(StaticConfig.FTP_URL,StaticConfig.FTP_PORT,StaticConfig.USER_NAME,StaticConfig.PASSWORD)){
             return false;
         }
         for (File file :files){

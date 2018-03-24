@@ -3,8 +3,11 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/AndroidWear.iml" filepath="$PROJECT_DIR$/AndroidWear.iml" />
+      <module fileurl="file://E:\Data-collection-androidWear\AndroidWear\AndroidWear.iml" filepath="E:\Data-collection-androidWear\AndroidWear\AndroidWear.iml" />
       <module fileurl="file://$PROJECT_DIR$/mobile/mobile.iml" filepath="$PROJECT_DIR$/mobile/mobile.iml" />
+      <module fileurl="file://E:\Data-collection-androidWear\AndroidWear\mobile\mobile.iml" filepath="E:\Data-collection-androidWear\AndroidWear\mobile\mobile.iml" />
       <module fileurl="file://$PROJECT_DIR$/wear/wear.iml" filepath="$PROJECT_DIR$/wear/wear.iml" />
+      <module fileurl="file://E:\Data-collection-androidWear\AndroidWear\wear\wear.iml" filepath="E:\Data-collection-androidWear\AndroidWear\wear\wear.iml" />
     </modules>
   </component>
 </project>

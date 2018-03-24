@@ -3,6 +3,8 @@ package com.example.tommy.androidwear.Utils;
 import android.os.StrictMode;
 import android.util.Log;
 
+import com.example.tommy.androidwear.StaticConfig;
+
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
@@ -27,7 +29,7 @@ import java.util.Enumeration;
 
 public class FTPUtils {
 
-    public static String PATH_NAME  = "/data"+ new SimpleDateFormat("yyyy_MM_dd_hhmm").format(new Date());
+    public  String PATH_NAME  = StaticConfig.FINAL_PATH;
     private FTPClient ftpClient = null;
     private static FTPUtils ftpUtilsInstance = null;
     private String FTPUrl;
@@ -37,6 +39,7 @@ public class FTPUtils {
 
     private FTPUtils()
     {
+        PATH_NAME  = StaticConfig.FINAL_PATH;
         ftpClient = new FTPClient();
     }
     /*
