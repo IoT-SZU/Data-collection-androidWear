@@ -18,8 +18,8 @@
         android:supportsRtl="true"
         android:theme="@android:style/Theme.DeviceDefault">
         <activity
-            android:name=".MainActivity"
-            android:label="@string/app_name">
+            android:name=".AppStart"
+            android:label="AndroidWear">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -27,14 +27,20 @@
             </intent-filter>
         </activity>
         <activity
+            android:name=".MainActivity"
+            android:label="@string/app_name">
+        </activity>
+        <activity
             android:name=".SensorActivity"
-            android:label="AndroidWear"></activity>
+            android:label="AndroidWear">
+        </activity>
 
         <service
             android:name=".SensorService"
-            android:label="AndroiWear"></service>
+            android:label="AndroiWear">
+        </service>
 
-        <activity android:name=".AppStart"></activity>
+
     </application>
 
 </manifest>
