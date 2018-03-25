@@ -25,12 +25,14 @@ public class OptionFragment extends Fragment implements View.OnClickListener{
     }
 
     public void onCreate(Bundle savedInstanceState) {
+        Log.i(TAG, "onCreate: ");
         super.onCreate(savedInstanceState);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        Log.i(TAG, "onCreateView: ");
         // Inflate the layout for this fragment
 
         return inflater.inflate(R.layout.fragment_option, container, false);
@@ -40,6 +42,7 @@ public class OptionFragment extends Fragment implements View.OnClickListener{
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        Log.i(TAG, "onActivityCreated: ");
         getActivity().findViewById(R.id.order1).setOnClickListener(this);
         getActivity().findViewById(R.id.order2).setOnClickListener(this);
         getActivity().findViewById(R.id.setting).setOnClickListener(this);
@@ -48,22 +51,51 @@ public class OptionFragment extends Fragment implements View.OnClickListener{
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
+        Log.i(TAG, "onAttach: ");
 
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
+        Log.i(TAG, "onDetach: ");
+    }
+
+    
+    @Override
+    public void onPause() {
+        super.onPause();
+        Log.i(TAG, "onPause: ");
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        Log.i(TAG, "onStop: ");
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Log.i(TAG, "onDestroy: ");
     }
 
     @Override
     public void onClick(View view) {
         switch (view.getId()){
             case R.id.order1:
-                Log.i(TAG, "onClick: order1");
+                getFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.container,SerialFragment.newInstance("order1"))
+                        .addToBackStack(null)
+                        .commit();
                 break;
             case R.id.order2:
-                Log.i(TAG, "onClick: order2");
+                getFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.container,SerialFragment.newInstance("order2"))
+                        .addToBackStack(null)
+                        .commit();
                 break;
             case R.id.setting:
                 Log.i(TAG, "onClick: setting");

@@ -16,9 +16,8 @@ public class AppStart extends Activity {
         getFragmentManager()
                 .beginTransaction()
                 .replace(R.id.container, OptionFragment.newInstance())
+                .addToBackStack(null)
                 .commit();
     }
 
-    public void enterOrder1(View view) {
-    }
 }

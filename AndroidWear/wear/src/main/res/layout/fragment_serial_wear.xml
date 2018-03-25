@@ -2,12 +2,12 @@
 <android.support.wearable.view.WatchViewStub xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/watch_view_stub"
+    android:id="@+id/fragment_serial_wear"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    app:rectLayout="@layout/rect_activity_main"
-    app:roundLayout="@layout/round_activity_main"
-    tools:context="com.example.tommy.androidwear.MainActivity"
+    app:rectLayout="@layout/fragment_serial"
+    app:roundLayout="@layout/fragment_serial"
+    tools:context="com.example.tommy.androidwear.AppStart"
     tools:deviceIds="wear"
     android:keepScreenOn="true">
 
