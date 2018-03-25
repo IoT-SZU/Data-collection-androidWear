@@ -47,6 +47,7 @@ public class MainActivity extends Activity{
         static int Empty = 1,Pre = 2,Latest = 3;
     }
 
+
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);

@@ -1,11 +1,15 @@
 package com.example.tommy.androidwear;
 
+import android.app.FragmentManager;
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import com.example.tommy.androidwear.Fragment.HintFragment;
 
 /**
  * Created by Tommy on 2018/3/24.
@@ -14,9 +18,11 @@ import android.widget.TextView;
 public class StringAdapter extends RecyclerView.Adapter<StringAdapter.ViewHolder> {
     private static final String TAG= "StringAdapter";
     private String[] mData;
+    private FragmentManager fragmentManager;
 
-    public StringAdapter(String[] data) {
+    public StringAdapter(String[] data,FragmentManager fragmentManager) {
         this.mData = data;
+        this.fragmentManager = fragmentManager;
     }
 
     public void updateData(String[] data) {
@@ -41,6 +47,11 @@ public class StringAdapter extends RecyclerView.Adapter<StringAdapter.ViewHolder
             @Override
             public void onClick(View view) {
                 Log.i(TAG, "onClick: "+mData[position]);
+                fragmentManager
+                        .beginTransaction()
+                        .replace(R.id.container, HintFragment.newInstance(mData[position]))
+                        .addToBackStack(null)
+                        .commit();
             }
         });
     }

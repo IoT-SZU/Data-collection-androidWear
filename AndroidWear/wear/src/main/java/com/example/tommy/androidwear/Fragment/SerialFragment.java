@@ -70,10 +70,10 @@ public class SerialFragment extends Fragment{
                 recyclerView.setLayoutManager(layoutManager);
                 switch (getArguments().getString(typeKey)){
                     case "order1":
-                        adapter = new StringAdapter(order1);
+                        adapter = new StringAdapter(order1,getFragmentManager());
                         break;
                     case "order2":
-                        adapter = new StringAdapter(order2);
+                        adapter = new StringAdapter(order2,getFragmentManager());
                         break;
                 }
                 recyclerView.setAdapter(adapter);

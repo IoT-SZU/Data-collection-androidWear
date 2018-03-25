@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.wearable.view.WatchViewStub xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/fragment_hint_wear"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:rectLayout="@layout/fragment_hint"
+    app:roundLayout="@layout/fragment_hint"
+    tools:context="com.example.tommy.androidwear.AppStart"
+    tools:deviceIds="wear"
+    android:keepScreenOn="true">
+
+</android.support.wearable.view.WatchViewStub>
