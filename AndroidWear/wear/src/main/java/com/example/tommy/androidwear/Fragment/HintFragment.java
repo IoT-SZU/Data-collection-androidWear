@@ -7,6 +7,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.wearable.view.WatchViewStub;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,6 +26,7 @@ import java.util.HashMap;
 
 public class HintFragment extends Fragment {
 
+    private static final String TAG = "HintFragment";
     private static final String HashKey = "key";
     HashMap<String,String> hashMap = new HashMap<>();
 
@@ -39,6 +41,7 @@ public class HintFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.i(TAG, "onCreate: "+StaticConfig.PATH);
         hashMap.put("gentle","小力敲击35下");
         hashMap.put("hard","大力敲击35");
         hashMap.put("fist","握拳敲击35下");
@@ -78,11 +81,16 @@ public class HintFragment extends Fragment {
                 hintStrKey = hintStrKey.substring(hintStrKey.lastIndexOf("/") + 1);
                 String hintStr = hashMap.get(hintStrKey);
                 hint.setText(hintStr);
-
+                StaticConfig.PATH_STACK.add(StaticConfig.PATH);
+                Log.i(TAG, "onClick: " + StaticConfig.PATH);
                 getActivity().findViewById(R.id.goback).setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         getFragmentManager().popBackStack();
+                        Log.i(TAG, "onClick: pop back before" + StaticConfig.PATH  );
+                        StaticConfig.PATH_STACK.pop();
+                        StaticConfig.PATH =  StaticConfig.PATH_STACK.pop();
+                        Log.i(TAG, "onClick: pop back  after" + StaticConfig.PATH  );
                     }
                 });
 
@@ -90,7 +98,6 @@ public class HintFragment extends Fragment {
                     @Override
                     public void onClick(View view) {
                         Intent intent = new Intent(getActivity(), MainActivity.class);
-                        intent.putExtra("fileName", StaticConfig.FINAL_PATH);
                         startActivity(intent);
                     }
                 });

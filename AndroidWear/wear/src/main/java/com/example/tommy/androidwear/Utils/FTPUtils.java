@@ -29,7 +29,8 @@ import java.util.Enumeration;
 
 public class FTPUtils {
 
-    public  String PATH_NAME  = StaticConfig.FINAL_PATH;
+    private static final String TAG = "FTPUtils";
+    public static String PATH_NAME  ="/data/";
     private FTPClient ftpClient = null;
     private static FTPUtils ftpUtilsInstance = null;
     private String FTPUrl;
@@ -39,7 +40,7 @@ public class FTPUtils {
 
     private FTPUtils()
     {
-        PATH_NAME  = StaticConfig.FINAL_PATH;
+        PATH_NAME  = StaticConfig.PATH;
         ftpClient = new FTPClient();
     }
     /*
@@ -88,6 +89,7 @@ public class FTPUtils {
             reply = ftpClient.getReplyCode();
             Log.d("login","success");
 
+
             if (!FTPReply.isPositiveCompletion(reply))
             {
                 //断开
@@ -116,6 +118,9 @@ public class FTPUtils {
      */
     public boolean uploadFile(String FilePath, String FileName) {
 
+        Log.i("", "uploadFile: "+FilePath);
+        Log.i("", "uploadFile: " +FileName);
+        Log.i("", "uploadFile: "+PATH_NAME);
         if (!ftpClient.isConnected())
         {
             if (!initFTPSetting(FTPUrl,  FTPPort,  UserName,  UserPassword))
@@ -125,16 +130,28 @@ public class FTPUtils {
         }
 
         try {
-
             //设置存储路径
-            ftpClient.makeDirectory(PATH_NAME);
+            String path = PATH_NAME;
+
+            CreateDirecroty(PATH_NAME);
             ftpClient.changeWorkingDirectory(PATH_NAME);
+
+//            while (path.contains("/")){
+//                path = path.substring(0,PATH_NAME.indexOf('/'));
+//                String longPath = path.substring(PATH_NAME.indexOf('/'));
+//                Log.i(TAG, "uploadFile: path : " + path);
+//                Log.i(TAG, "uploadFile: long path : " + longPath);
+//                ftpClient.makeDirectory(path);
+//                ftpClient.changeWorkingDirectory(path);
+//            }
+
 
             //设置上传文件需要的一些基本信息
             ftpClient.setBufferSize(1024);
             ftpClient.setControlEncoding("UTF-8");
             ftpClient.enterLocalPassiveMode();
             ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
+
 
             //文件上传吧～
             FileInputStream fileInputStream = new FileInputStream(FilePath);
@@ -210,6 +227,52 @@ public class FTPUtils {
         }
 
         return true;
+    }
+
+    /** */
+    /**
+     * 递归创建远程服务器目录
+     *
+     * @param remote
+     *            远程服务器文件绝对路径
+     *
+     * @return 目录创建是否成功
+     * @throws IOException
+     */
+    public boolean CreateDirecroty(String remote) throws IOException {
+        boolean success = true;
+        String directory = remote.substring(0, remote.lastIndexOf("/") + 1);
+        // 如果远程目录不存在，则递归创建远程服务器目录
+        if (!directory.equalsIgnoreCase("/")
+                && !ftpClient.changeWorkingDirectory(new String(directory))) {
+            int start = 0;
+            int end = 0;
+            if (directory.startsWith("/")) {
+                start = 1;
+            } else {
+                start = 0;
+            }
+            end = directory.indexOf("/", start);
+            while (true) {
+                String subDirectory = new String(remote.substring(start, end));
+                if (!ftpClient.changeWorkingDirectory(subDirectory)) {
+                    if (ftpClient.makeDirectory(subDirectory)) {
+                        ftpClient.changeWorkingDirectory(subDirectory);
+                    } else {
+                        System.out.println("创建目录失败");
+                        success = false;
+                        return success;
+                    }
+                }
+                start = end + 1;
+                end = directory.indexOf("/", start);
+                // 检查所有目录是否创建完毕
+                if (end <= start) {
+                    break;
+                }
+            }
+        }
+        return success;
     }
 
 }

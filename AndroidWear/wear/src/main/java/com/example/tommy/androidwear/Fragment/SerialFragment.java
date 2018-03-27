@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.tommy.androidwear.R;
+import com.example.tommy.androidwear.StaticConfig;
 import com.example.tommy.androidwear.StringAdapter;
 
 import java.util.List;
@@ -50,6 +51,7 @@ public class SerialFragment extends Fragment{
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.i(TAG, "onCreate: "+StaticConfig.PATH);
     }
     @Nullable
     @Override
@@ -82,6 +84,9 @@ public class SerialFragment extends Fragment{
                     @Override
                     public void onClick(View view) {
                         getFragmentManager().popBackStack();
+                        Log.i(TAG, "onClick: pop back before" + StaticConfig.PATH  );
+                        StaticConfig.PATH =  StaticConfig.PATH_STACK.pop();
+                        Log.i(TAG, "onClick: pop back  after" + StaticConfig.PATH  );
                     }
                 });
             }

@@ -122,8 +122,9 @@ public class FileTransfer implements DataApi.DataListener{
     }
 
     public boolean sendThroughFTP(String FileName,File[] files,Context context){
+        Log.i(TAG, "sendThroughFTP: " + FileName);
         if(!FileName.equals("anonymous") || !FileName.equals("")) {
-            StaticConfig.FINAL_PATH = "/"+FileName+new SimpleDateFormat("yyyy_MM_dd").format(new Date());
+            FTPUtils.PATH_NAME = "/"+FileName;
         }
         if (!MainActivity.isWifiConnected(context)){
             return false;

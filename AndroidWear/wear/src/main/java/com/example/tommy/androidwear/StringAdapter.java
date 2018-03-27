@@ -11,6 +11,8 @@ import android.widget.TextView;
 
 import com.example.tommy.androidwear.Fragment.HintFragment;
 
+import java.io.File;
+
 /**
  * Created by Tommy on 2018/3/24.
  */
@@ -46,12 +48,16 @@ public class StringAdapter extends RecyclerView.Adapter<StringAdapter.ViewHolder
         holder.mTv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.i(TAG, "onClick: "+mData[position]);
+                StaticConfig.PATH_STACK.add(StaticConfig.PATH);
+                Log.i(TAG, "onClick: " + StaticConfig.PATH);
+                StaticConfig.PATH +=mData[position];
+                StaticConfig.PATH +=File.separator;
                 fragmentManager
                         .beginTransaction()
                         .replace(R.id.container, HintFragment.newInstance(mData[position]))
                         .addToBackStack(null)
                         .commit();
+
             }
         });
     }

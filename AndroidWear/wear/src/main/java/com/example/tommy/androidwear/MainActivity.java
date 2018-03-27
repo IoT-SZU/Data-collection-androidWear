@@ -86,6 +86,7 @@ public class MainActivity extends Activity{
         super.onCreate(savedInstanceState);
         //initialize the files array
         SendingFiles = new ArrayList<File>();
+        Log.i(TAG, "onCreate: "+StaticConfig.PATH);
 
         setContentView(R.layout.activity_main);
 
@@ -99,6 +100,7 @@ public class MainActivity extends Activity{
                 genrateButton = (Button)stub.findViewById(R.id.generateFile);
                 durationTime = (EditText)stub.findViewById(R.id.durationTime);
                 FileNameSpace = (EditText)stub.findViewById(R.id.EnterName);
+                FileNameSpace.setText(StaticConfig.PATH + File.separator);
                 saveDataButton = (Button) stub.findViewById(R.id.saveData);
                 wipeDataButton = (Button)stub.findViewById(R.id.wipeData);
                 CfileLabel = (TextView) stub.findViewById(R.id.ShowFileName);
@@ -301,13 +303,18 @@ public class MainActivity extends Activity{
 
     void onGenerate(){
         //保存文件到手表中
-        File xAcceDataFile = writeArrayFile(SensorService.xAcceArray,"xAcceDataAsset"+(Filenum-1));
-        File yAcceDataFile = writeArrayFile(SensorService.yAcceArray,"yAcceDataAsset"+(Filenum-1));
-        File zAcceDataFile = writeArrayFile(SensorService.zAcceArray,"zAcceDataAsset"+(Filenum-1));
+        File file = new File(getFilesDir()+ StaticConfig.PATH+File.separator);
+        Log.d(TAG, "onGenerate: "+file.getAbsolutePath());
+        if (!file.exists()){
+            file.mkdirs();
+        }
+        File xAcceDataFile = writeArrayFile(SensorService.xAcceArray,StaticConfig.PATH+ "xAcceDataAsset"+(Filenum-1));
+        File yAcceDataFile = writeArrayFile(SensorService.yAcceArray,StaticConfig.PATH+ "yAcceDataAsset"+(Filenum-1));
+        File zAcceDataFile = writeArrayFile(SensorService.zAcceArray,StaticConfig.PATH+ "zAcceDataAsset"+(Filenum-1));
 
-        File xGyroDataFile = writeArrayFile(SensorService.xGyroArray,"xGyroData"+(Filenum-1));
-        File yGyroDataFile = writeArrayFile(SensorService.yGyroArray,"yGyroData"+(Filenum-1));
-        File zGyroDataFile = writeArrayFile(SensorService.zGyroArray,"zGyroData"+(Filenum-1));
+        File xGyroDataFile = writeArrayFile(SensorService.xGyroArray,StaticConfig.PATH+ "xGyroData"+(Filenum-1));
+        File yGyroDataFile = writeArrayFile(SensorService.yGyroArray,StaticConfig.PATH+ "yGyroData"+(Filenum-1));
+        File zGyroDataFile = writeArrayFile(SensorService.zGyroArray,StaticConfig.PATH+ "zGyroData"+(Filenum-1));
 //        File audioDataFile = new File(FileUtils.getWavFileAbsolutePath("test"));
 //        Log.i(TAG, "onGenerate: " + FileUtils.getWavFileAbsolutePath("test"));
 
