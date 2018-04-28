@@ -14,6 +14,7 @@ import android.widget.Toast;
 
 import com.example.tommy.androidwear.R;
 import com.example.tommy.androidwear.StaticConfig;
+import com.example.tommy.androidwear.Utils.FileTransfer;
 
 import java.io.File;
 
@@ -23,9 +24,11 @@ import java.io.File;
 
 public class OptionFragment extends Fragment implements View.OnClickListener{
 
+    private static final String TAG = "OptionFragment";
 
     EditText supervisor,tester;
-    private static final String TAG = "OptionFragment";
+    private FileTransfer fileTransfer;
+
     public static OptionFragment newInstance() {
         OptionFragment fragment = new OptionFragment();
         return fragment;
@@ -35,6 +38,7 @@ public class OptionFragment extends Fragment implements View.OnClickListener{
         Log.i(TAG, "onCreate: ");
         super.onCreate(savedInstanceState);
         Log.i(TAG, "onCreate: "+StaticConfig.PATH);
+
     }
 
     @Override
@@ -53,10 +57,12 @@ public class OptionFragment extends Fragment implements View.OnClickListener{
         Log.i(TAG, "onActivityCreated: ");
         getActivity().findViewById(R.id.order1).setOnClickListener(this);
         getActivity().findViewById(R.id.order2).setOnClickListener(this);
-        getActivity().findViewById(R.id.setting).setOnClickListener(this);
+        getActivity().findViewById(R.id.sendButton).setOnClickListener(this);
+        getActivity().findViewById(R.id.deleteButton).setOnClickListener(this);
         supervisor = (EditText) getActivity().findViewById(R.id.supervisor);
         tester = (EditText) getActivity().findViewById(R.id.tester_name);
 
+        fileTransfer = new FileTransfer(getActivity());
     }
 
     @Override
@@ -93,6 +99,15 @@ public class OptionFragment extends Fragment implements View.OnClickListener{
 
     @Override
     public void onClick(View view) {
+        if (view.getId() == R.id.sendButton) {
+            sendData();
+            return;
+        }
+        if (view.getId() == R.id.deleteButton) {
+            deleteData();
+            return;
+        }
+
         if (checkValid()) {
             StaticConfig.PATH_STACK.add(StaticConfig.PATH);
             Log.i(TAG, "onClick: " + StaticConfig.PATH);
@@ -116,9 +131,6 @@ public class OptionFragment extends Fragment implements View.OnClickListener{
                             .addToBackStack(null)
                             .commit();
                 break;
-            case R.id.setting:
-                Log.i(TAG, "onClick: setting");
-                break;
         }
     }
     boolean checkValid(){
@@ -127,5 +139,82 @@ public class OptionFragment extends Fragment implements View.OnClickListener{
         }
         Toast.makeText(getActivity(),"one of the EditTexts is empty",Toast.LENGTH_SHORT).show();
         return false;
+    }
+
+    private void sendData() {
+        setEnable(false);
+        Toast.makeText(getActivity(), "Uploading...", Toast.LENGTH_SHORT).show();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                recoverUI(sendDataRecursive(getActivity().getFilesDir()) ? "Finished" : "Failed");
+            }
+        }).start();
+    }
+
+    private void deleteData() {
+        setEnable(false);
+        Toast.makeText(getActivity(), "Deleting...", Toast.LENGTH_SHORT).show();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                recoverUI(deleteDataRecursive(getActivity().getFilesDir()) ? "Finished" : "Failed");
+            }
+        }).start();
+    }
+
+    private boolean sendDataRecursive(File dir) {
+        boolean res = true;
+        for (File file : dir.listFiles()) {
+            if (file.isDirectory()) {
+                if (!sendDataRecursive(file)) {
+                    res = false;
+                }
+            } else {
+                String dirname = file.getParentFile()
+                        .getAbsolutePath()
+                        .replaceFirst("/data/user/0/.*/files/(.*)", "$1/");
+                if (!fileTransfer.sendThroughFTP(dirname, new File[] {file}, getActivity())) {
+                    res = false;
+                }
+            }
+        }
+        return res;
+    }
+
+    private boolean deleteDataRecursive(File dir) {
+        boolean res = true;
+        for (File file : dir.listFiles()) {
+            if (file.isDirectory()) {
+                if (!deleteDataRecursive(file)) {
+                    res = false;
+                }
+            } else {
+                if (!file.delete()) {
+                    res = false;
+                }
+            }
+        }
+        if (!dir.delete()) {
+            res = false;
+        }
+        return res;
+    }
+
+    private void recoverUI(final String message) {
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                setEnable(true);
+                Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void setEnable(boolean enable) {
+        getActivity().findViewById(R.id.order1).setEnabled(enable);
+        getActivity().findViewById(R.id.order2).setEnabled(enable);
+        getActivity().findViewById(R.id.sendButton).setEnabled(enable);
+        getActivity().findViewById(R.id.deleteButton).setEnabled(enable);
     }
 }

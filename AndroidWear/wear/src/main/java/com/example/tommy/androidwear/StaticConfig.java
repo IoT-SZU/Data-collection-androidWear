@@ -11,9 +11,9 @@ import java.util.Stack;
  */
 
 public class StaticConfig {
-    public static String FTP_URL = "172.31.73.52";
-    public static String USER_NAME = "Gryffindor";
-    public static String PASSWORD = "Alohomora";
+    public static String FTP_URL = "172.31.73.161";
+    public static String USER_NAME = "island_ftp";
+    public static String PASSWORD = "123yandao";
     public static int FTP_PORT = 21;
     public static String PATH = "/data/";
     public static Stack<String>  PATH_STACK = new Stack<>();
